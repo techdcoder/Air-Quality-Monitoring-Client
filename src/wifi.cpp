@@ -16,6 +16,11 @@ namespace Wifi{
   }
 
   void connect(const char* ssid, const char* password){
+    Serial.print("Wifi Name: ");
+    Serial.println(ssid);
+
+    Serial.print("Wifi Password: ");
+    Serial.println(password);
     if(!connecting_to_wifi){
       WiFi.begin(ssid, password);
       connecting_to_wifi = true;
@@ -28,6 +33,11 @@ namespace Wifi{
   }
 
   void connect_server(const char* ip_addr, int port){
+    Serial.print("Server IP: ");
+    Serial.println(ip_addr);
+
+    Serial.print("Server Port: ");
+    Serial.println(port);
     if(wifi_client.connect(ip_addr,port)){
       Serial.println("Conected to Server");
     }
@@ -42,6 +52,7 @@ namespace Wifi{
   }
 
   void send_data(const char* data){
+    esp_serial.listen();
     wifi_client.write(data);
     wifi_client.flush();
   }
@@ -62,11 +73,13 @@ b4(b4_)
 IP_Address::IP_Address(const char* ip_str_) {
   memset(ip_str, 0, sizeof(ip_str));
   memcpy(ip_str,ip_str_,sizeof(char)*strlen(ip_str_));
+  char buffer[128];
+  memcpy(buffer,ip_str_,sizeof(char)*strlen(ip_str_));
 
-  const char* ptr = strtok(ip_str, ".");
+  const char* ptr = strtok(buffer, ".");
   b1 = atoi(ptr);
     
-  strtok(NULL, ".");
+  ptr = strtok(NULL, ".");
   b2 = atoi(ptr);
     
   ptr = strtok(NULL, ".");
@@ -74,6 +87,11 @@ IP_Address::IP_Address(const char* ip_str_) {
     
   ptr = strtok(NULL, ".");
   b4 = atoi(ptr);
+
+  Serial.println(b1);
+  Serial.println(b2);
+  Serial.println(b3);
+  Serial.println(b4);
 }
 
 const char* IP_Address::get_str(){

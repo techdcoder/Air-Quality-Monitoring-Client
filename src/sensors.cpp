@@ -7,7 +7,7 @@ const int mq2 = A0;
 const int mq5 = A1;
 const int mq7 = A2; 
 
-DHT dht(7,DHT22);
+DHT dht(9,DHT22);
 
 SoftwareSerial pms_serial(2,3);
 PMS pms(pms_serial);
@@ -22,6 +22,7 @@ void initialize_sensors(){
 }
 
 SensorData get_sensor_data(){
+    pms_serial.listen();
     SensorData output;
 
     output.mq2_reading = analogRead(mq2);
@@ -73,6 +74,7 @@ void float_to_str(float input, char* output, int buf_size){
     char decimal_part[2];
     decimal_part[0] = '0' + (int(input * 10) % 10);
     decimal_part[1] = '\0';
+    output[strlen(output)] = '.';
     strcat(output,decimal_part);
 }
 
@@ -80,9 +82,6 @@ const char* SensorData::csv(){
     static char csv[256];
     char temperature[10];
     char humidity[10];
-
-    Serial.println(dht_humidity);
-    Serial.println(dht_temperature);
 
     float_to_str(dht_humidity,humidity,10);
     float_to_str(dht_temperature,temperature,10);

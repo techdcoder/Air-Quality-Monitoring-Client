@@ -18,6 +18,8 @@ int read_serial_blocking(char* str, int max_size){
         yield();
     }
 
+    delay(100); 
+
     int len = Serial.available();
     if(len){
         memset(str,0,max_size);
@@ -65,16 +67,27 @@ void print_ui(int wait_duration){
             read_serial_blocking(input,BUFFER_SIZE);
             store_wifi_name(input);
 
+            Serial.println(input);
+
             Serial.println("Enter Wifi Password:");
             read_serial_blocking(input,BUFFER_SIZE);
             store_wifi_password(input);
+
+            Serial.println(input);
+
         }else if(input[0] == '2'){
             Serial.println("Enter Server IP: ");
             read_serial_blocking(input,BUFFER_SIZE);
             store_server_ip(input);
+            IP_Address ip_addr(input);
+            store_server_ip(ip_addr); 
+            Serial.println(ip_addr.get_str());
 
+            
             Serial.println("Enter Server Port:");
             read_serial_blocking(input,BUFFER_SIZE);
+
+            Serial.println(input);
 
             for(int i = 0; i < strlen(input); ++i){
                 if(isAlpha(input[i])){

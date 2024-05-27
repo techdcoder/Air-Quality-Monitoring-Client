@@ -1,5 +1,7 @@
 #include <Arduino.h>
 
+//#define WIFI
+
 #include "wifi.hpp"
 #include <LiquidCrystal_I2C.h>
 #include "sensors.hpp"
@@ -26,12 +28,16 @@ void setup(){
   initialize_sensors();
 
   retrieve_data();
-  Wifi::initialize();
 
+
+  #ifdef WIFI
+  Wifi::initialize();  
   print_ui(3000);
+  #endif 
 }
 
 void loop() {
+  #ifdef WIFI
   if(!Wifi::connected()){
     print_ui(3000);
     Serial.println("Connecting to Wifi");
@@ -45,14 +51,16 @@ void loop() {
     Wifi::connect_server(server_ip.get_str(),server_port);
     return;
   }
+  #endif 
 
   SensorData data = get_sensor_data();
-
   if(data.pms_read){
     const char* csv = data.csv();
-    Wifi::send_data(csv);
     Serial.println(csv);
-  }   
+  
+    #ifdef WIFI
+    Wifi::send_data(csv);
+    #endif
+  }
 
-  delay(200);
 }
